@@ -107,6 +107,7 @@
       <version>${version.org.assertj}</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
   <build>
     <plugins>

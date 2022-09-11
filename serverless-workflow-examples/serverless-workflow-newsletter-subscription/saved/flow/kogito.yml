@@ -1,0 +1,36 @@
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: confirm-subscription-trigger-subscription-flow
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: confirm.subscription
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: subscription-flow
+---
+apiVersion: sources.knative.dev/v1
+kind: SinkBinding
+metadata:
+  name: sb-subscription-flow
+spec:
+  sink:
+    ref:
+      apiVersion: eventing.knative.dev/v1
+      kind: Broker
+      name: default
+      namespace: ""
+  subject:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    name: subscription-flow
+---
+apiVersion: eventing.knative.dev/v1
+kind: Broker
+metadata:
+  name: default

@@ -1,0 +1,116 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: newsletter-postgres
+data:
+  postgrespass: cGFzcwo=
+type: Opaque
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: event-display
+  annotations:
+    serving.knative.openshift.io/enablePassthrough: "true"
+spec:
+  template:
+    metadata:
+      annotations:
+#        autoscaling.knative.dev/min-scale: "1"
+        sidecar.istio.io/inject: 'true'
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      containers:
+        - image: gcr.io/knative-releases/knative.dev/eventing-contrib/cmd/event_display@sha256:a214514d6ba674d7393ec8448dd272472b2956207acb3f83152d3071f0ab1911
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: newsletter-postgres
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: newsletter-postgres
+  type: ClusterIP
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    serving.knative.openshift.io/enablePassthrough: "true"
+  labels:
+    app.kubernetes.io/version: 1.0-SNAPSHOT
+    app.kubernetes.io/name: subscription-flow
+  name: subscription-flow
+spec:
+  template:
+    metadata:
+      annotations:
+#        autoscaling.knative.dev/min-scale: "1"
+        sidecar.istio.io/inject: 'true'
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app.kubernetes.io/version: 1.0-SNAPSHOT
+        app.kubernetes.io/name: subscription-flow
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_HOST
+              value: newsletter-postgres
+            - name: SUBSCRIPTION_API_URL
+              value: http://subscription-service.newsletter-showcase.svc.cluster.local
+          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-flow:2.2-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+#          command: [ "/bin/bash", "-c", "ls -la; sleep 10; java -Djava.util.logging.manager=org.jboss.logmanager.LogManager -jar quarkus-run.jar" ]
+          name: subscription-flow
+          ports:
+            - containerPort: 8080
+              name: http1
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsletter-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newsletter-postgres
+  template:
+    metadata:
+      labels:
+        app: newsletter-postgres
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgrespass
+                  name: newsletter-postgres
+          image: postgres:13.4-alpine3.14
+          imagePullPolicy: IfNotPresent
+          name: newsletter-postgres
+          ports:
+            - containerPort: 5432
+              name: tcp
+              protocol: TCP
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: event-display-trigger
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: new.subscription
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: event-display

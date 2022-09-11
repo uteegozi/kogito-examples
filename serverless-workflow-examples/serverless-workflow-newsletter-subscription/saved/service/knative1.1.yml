@@ -1,0 +1,35 @@
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: e33376813365d4d2d345ce871768a7f7ca700ff4
+    app.quarkus.io/build-timestamp: 2022-09-07 - 10:49:49 +0000
+  labels:
+    app.kubernetes.io/name: subscription-service
+    app.kubernetes.io/version: 1.0-SNAPSHOT
+  name: subscription-service
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: subscription-service
+        app.kubernetes.io/version: 1.0-SNAPSHOT
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_HOST
+              value: newsletter-postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgrespass
+                  name: newsletter-postgres
+          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-service:1.1-SNAPSHOT
+          command: [ "/bin/bash", "-c", "java -javaagent:tmp/opentelemetry-javaagent.jar -Djava.util.logging.manager=org.jboss.logmanager.LogManager -jar quarkus-run.jar" ]
+          imagePullPolicy: IfNotPresent
+          name: subscription-service
+          ports:
+            - containerPort: 8080
+              name: http1
+              protocol: TCP
