@@ -18,8 +18,6 @@ spec:
     spec:
       containers:
         - env:
-            - name: QUARKUS_LOG_LEVEL
-              value: DEBUG
             - name: QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT
               value: http://jaeger-all-in-one-inmemory-collector.tracing-system.svc.cluster.local:4317/api/traces
             - name: POSTGRES_HOST
@@ -29,8 +27,8 @@ spec:
                 secretKeyRef:
                   key: postgrespass
                   name: newsletter-postgres
-          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-service:1.2.1-SNAPSHOT
-          imagePullPolicy: Always
+          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-service:3.0-SNAPSHOT
+          imagePullPolicy: IfNotPresent
           name: subscription-service
           ports:
             - containerPort: 8080

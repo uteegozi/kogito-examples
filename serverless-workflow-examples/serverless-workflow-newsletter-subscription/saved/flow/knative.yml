@@ -52,7 +52,7 @@ spec:
               value: newsletter-postgres
             - name: SUBSCRIPTION_API_URL
               value: http://subscription-service.newsletter-showcase.svc.cluster.local
-          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-flow:1.0-SNAPSHOT
+          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-flow:1.0-SNAPSHOT
           imagePullPolicy: IfNotPresent
           name: subscription-flow
           ports:

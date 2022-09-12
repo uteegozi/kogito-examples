@@ -31,6 +31,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.opentelemetry.api.trace.Span;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -41,11 +42,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 @Path("/subscription")
 @RegisterForReflection
 public class SubscriptionResource {
+
+    private static final Logger log = Logger.getLogger(SubscriptionResource.class);
+
 
     @Inject
     SubscriptionService service;
@@ -56,6 +61,14 @@ public class SubscriptionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @APIResponseSchema(value = Subscription.class, responseDescription = "success", responseCode = "200")
     public Response confirm(Subscription subscription) {
+        log.debug("************* confirm adding span");
+        Span span = Span.current();
+        log.debug("************* getTraceId: "+span.getSpanContext().getTraceId());
+        log.debug("************* getSpanId: "+span.getSpanContext().getSpanId());
+        log.debug("************* getTraceState: "+span.getSpanContext().getTraceState().toString());
+        span.addEvent("kogitoLogEntry");
+        span.setAttribute("kogitoprocinstanceid", "dummyid");
+
         if (subscription.hasId()) {
             try {
                 return Response.ok(service.confirm(subscription)).build();
@@ -73,6 +86,14 @@ public class SubscriptionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponseSchema(value = EmailVerificationReply.class, responseDescription = "success", responseCode = "200")
     public Response verify(@QueryParam("email") String email) {
+        log.debug("************* verify adding span");
+        Span span = Span.current();
+        log.debug("************* getTraceId: "+span.getSpanContext().getTraceId());
+        log.debug("************* getSpanId: "+span.getSpanContext().getSpanId());
+        log.debug("************* getTraceState: "+span.getSpanContext().getTraceState().toString());
+        span.addEvent("kogitoLogEntry");
+        span.setAttribute("kogitoprocinstanceid", "dummyid");
+
         if (service.checkEmail(email)) {
             return Response.ok(new EmailVerificationReply(email, true)).build();
         }
@@ -84,6 +105,14 @@ public class SubscriptionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @APIResponseSchema(value = Subscription.class, responseDescription = "success", responseCode = "200")
     public Response subscribe(Subscription subscription) {
+        log.debug("************* subscribe adding span");
+        Span span = Span.current();
+        log.debug("************* getTraceId: "+span.getSpanContext().getTraceId());
+        log.debug("************* getSpanId: "+span.getSpanContext().getSpanId());
+        log.debug("************* getTraceState: "+span.getSpanContext().getTraceState().toString());
+        span.addEvent("kogitoLogEntry");
+        span.setAttribute("kogitoprocinstanceid", "dummyid");
+
         if (subscription.hasId()) {
             return Response.ok(service.subscribe(subscription)).build();
         }

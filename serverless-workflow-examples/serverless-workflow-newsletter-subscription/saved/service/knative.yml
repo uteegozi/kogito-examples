@@ -25,7 +25,7 @@ spec:
                 secretKeyRef:
                   key: postgrespass
                   name: newsletter-postgres
-          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-service:1.0-SNAPSHOT
+          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-service:1.0-SNAPSHOT
           imagePullPolicy: IfNotPresent
           name: subscription-service
           ports:

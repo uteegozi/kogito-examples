@@ -49,41 +49,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-extension-trace-propagators</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.opentelemetry.instrumentation</groupId>
-      <artifactId>opentelemetry-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-extension-annotations</artifactId>
-    </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <!-- display active profile in compile phase -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-help-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>show-profiles</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>active-profiles</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

@@ -21,6 +21,8 @@ spec:
     spec:
       containers:
         - env:
+            - name: QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger-collector.istio-system.svc:4317/api/traces
             - name: POSTGRES_HOST
               value: newsletter-postgres
             - name: POSTGRES_PASSWORD
@@ -28,7 +30,7 @@ spec:
                 secretKeyRef:
                   key: postgrespass
                   name: newsletter-postgres
-          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-service:2.2-SNAPSHOT
+          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-service:2.2-SNAPSHOT
           imagePullPolicy: IfNotPresent
           name: subscription-service
           ports:

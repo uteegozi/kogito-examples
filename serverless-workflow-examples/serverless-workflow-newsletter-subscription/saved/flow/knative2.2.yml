@@ -58,11 +58,13 @@ spec:
     spec:
       containers:
         - env:
+            - name: QUARKUS_OPENTELEMETRY_TRACER_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger-collector.istio-system.svc:4317/api/traces
             - name: POSTGRES_HOST
               value: newsletter-postgres
             - name: SUBSCRIPTION_API_URL
               value: http://subscription-service.newsletter-showcase.svc.cluster.local
-          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-flow:2.2-SNAPSHOT
+          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-flow:2.2-SNAPSHOT
           imagePullPolicy: IfNotPresent
 #          command: [ "/bin/bash", "-c", "ls -la; sleep 10; java -Djava.util.logging.manager=org.jboss.logmanager.LogManager -jar quarkus-run.jar" ]
           name: subscription-flow

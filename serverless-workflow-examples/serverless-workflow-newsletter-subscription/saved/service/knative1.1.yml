@@ -18,6 +18,14 @@ spec:
     spec:
       containers:
         - env:
+            - name: QUARKUS_LOG_LEVEL
+              value: DEBUG
+            - name: OTEL_SERVICE_NAME
+              value: subscription-service
+            - name: OTEL_TRACES_EXPORTER
+              value: zipkin
+            - name: OTEL_EXPORTER_ZIPKIN_ENDPOINT
+              value: http://jaeger-all-in-one-inmemory-collector.tracing-system.svc.cluster.local:9411/api/v2/spans
             - name: POSTGRES_HOST
               value: newsletter-postgres
             - name: POSTGRES_PASSWORD
@@ -25,7 +33,7 @@ spec:
                 secretKeyRef:
                   key: postgrespass
                   name: newsletter-postgres
-          image: image-registry.openshift-image-registry.svc:5000/trace-img/serverless-workflow-newsletter-subscription-service:1.1-SNAPSHOT
+          image: quay.io/uegozi/serverless-workflow-newsletter-subscription-service:1.1-SNAPSHOT
           command: [ "/bin/bash", "-c", "java -javaagent:tmp/opentelemetry-javaagent.jar -Djava.util.logging.manager=org.jboss.logmanager.LogManager -jar quarkus-run.jar" ]
           imagePullPolicy: IfNotPresent
           name: subscription-service
